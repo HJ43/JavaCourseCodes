@@ -1,6 +1,8 @@
 package io.github.kimmking.gateway.inbound;
 
 import io.github.kimmking.gateway.outbound.httpclient4.HttpOutboundHandler;
+import io.github.kimmking.gateway.outbound.netty4.NettyHttpClient;
+import io.github.kimmking.gateway.outbound.netty4.NettyHttpOutboundHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -12,11 +14,11 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
     private final String proxyServer;
-    private HttpOutboundHandler handler;
+    private NettyHttpClient handler;
     
     public HttpInboundHandler(String proxyServer) {
         this.proxyServer = proxyServer;
-        handler = new HttpOutboundHandler(this.proxyServer);
+        handler = new NettyHttpClient();
     }
     
     @Override
@@ -27,6 +29,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
+
             //logger.info("channelRead流量接口请求开始，时间为{}", startTime);
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
 //            String uri = fullRequest.uri();
@@ -35,8 +38,10 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 //                handlerTest(fullRequest, ctx);
 //            }
     
-            handler.handle(fullRequest, ctx);
-    
+            //handler.handle(fullRequest, ctx);
+            String host = proxyServer.replaceAll("/", "").split(":")[1];
+            int port = Integer.parseInt(proxyServer.replaceAll("/", "").split(":")[2]);
+            handler.connect(host, port, ctx);
         } catch(Exception e) {
             e.printStackTrace();
         } finally {

@@ -33,10 +33,12 @@ public class HttpInboundServer {
 
         try {
             ServerBootstrap b = new ServerBootstrap();
+            // windows下SO_BACKLOG默认200，linux和mac默认128
             b.option(ChannelOption.SO_BACKLOG, 128)
                     .option(ChannelOption.TCP_NODELAY, true)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.SO_REUSEADDR, true)
+                    // 默认32 * 1024最为合适
                     .option(ChannelOption.SO_RCVBUF, 32 * 1024)
                     .option(ChannelOption.SO_SNDBUF, 32 * 1024)
                     .option(EpollChannelOption.SO_REUSEPORT, true)

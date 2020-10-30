@@ -21,7 +21,7 @@ public class NettyServerApplication {
         System.out.println(GATEWAY_NAME + " " + GATEWAY_VERSION +" started at http://localhost:" + port + " for server:" + proxyServer);
         try {
             server.run();
-        }catch (Exception ex){
+        } catch (Exception ex){
             ex.printStackTrace();
         }
     }
