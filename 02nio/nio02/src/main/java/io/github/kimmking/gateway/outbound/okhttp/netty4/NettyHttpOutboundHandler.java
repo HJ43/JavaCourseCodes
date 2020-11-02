@@ -1,4 +1,4 @@
-package io.github.kimmking.gateway.outbound.netty4;
+package io.github.kimmking.gateway.outbound.okhttp.netty4;
 
 import io.github.kimmking.gateway.util.ByteBufToBytes;
 import io.netty.buffer.ByteBuf;

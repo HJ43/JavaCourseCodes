@@ -1,4 +1,4 @@
-package io.github.kimmking.gateway.outbound.netty4;
+package io.github.kimmking.gateway.outbound.okhttp.netty4;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;

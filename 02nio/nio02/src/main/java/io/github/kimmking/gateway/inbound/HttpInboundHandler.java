@@ -15,12 +15,12 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
     private final String proxyServer;
     private NettyHttpClient handler;
-    
+
     public HttpInboundHandler(String proxyServer) {
         this.proxyServer = proxyServer;
         handler = new NettyHttpClient();
     }
-    
+
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
@@ -37,11 +37,9 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 //            if (uri.contains("/test")) {
 //                handlerTest(fullRequest, ctx);
 //            }
-    
+
             //handler.handle(fullRequest, ctx);
-            String host = proxyServer.replaceAll("/", "").split(":")[1];
-            int port = Integer.parseInt(proxyServer.replaceAll("/", "").split(":")[2]);
-            handler.connect(host, port, ctx);
+            handler.connect(proxyServer, ctx);
         } catch(Exception e) {
             e.printStackTrace();
         } finally {
