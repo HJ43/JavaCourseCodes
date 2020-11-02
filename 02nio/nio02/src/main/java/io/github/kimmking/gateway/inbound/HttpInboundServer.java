@@ -20,11 +20,11 @@ public class HttpInboundServer {
     private static Logger logger = LoggerFactory.getLogger(HttpInboundServer.class);
 
     private int port;
-    
+
     private List<String> proxyServerList;
 
     public HttpInboundServer(int port, List<String> proxyServerList) {
-        this.port=port;
+        this.port = port;
         this.proxyServerList = proxyServerList;
     }
 

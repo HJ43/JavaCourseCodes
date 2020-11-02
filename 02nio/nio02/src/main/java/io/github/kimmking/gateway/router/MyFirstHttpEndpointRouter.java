@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
-public class MyFirstHttpEndpointRouter implements HttpEndpointRouter{
+public class MyFirstHttpEndpointRouter implements HttpEndpointRouter {
 
     @Override
     public String route(List<String> endpoints) {

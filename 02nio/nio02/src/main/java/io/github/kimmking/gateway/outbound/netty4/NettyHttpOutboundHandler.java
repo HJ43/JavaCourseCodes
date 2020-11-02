@@ -20,11 +20,13 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
     private int contentLength = 0;
     private FullHttpRequest fullHttpRequest = null;
     private String backendUrl;
+
     public NettyHttpOutboundHandler(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest, String backendUrl) {
         this.parentCtx = ctx;
         this.fullHttpRequest = fullHttpRequest;
         this.backendUrl = backendUrl;
     }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx)
             throws Exception {
@@ -40,15 +42,15 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
        /*DefaultFullHttpRequest request = new DefaultFullHttpRequest(
                 HttpVersion.HTTP_1_1, HttpMethod.GET, new URI("/").toASCIIString());*/
 
-       // 构建http请求
-            request.headers().set(HttpHeaderNames.HOST, host);
-            request.headers().set(HttpHeaderNames.CONNECTION,
-                    HttpHeaderNames.CONNECTION);
-            request.headers().set(HttpHeaderNames.CONTENT_LENGTH,
-                    request.content().readableBytes());
+        // 构建http请求
+        request.headers().set(HttpHeaderNames.HOST, host);
+        request.headers().set(HttpHeaderNames.CONNECTION,
+                HttpHeaderNames.CONNECTION);
+        request.headers().set(HttpHeaderNames.CONTENT_LENGTH,
+                request.content().readableBytes());
         ctx.writeAndFlush(request);
     }
-    
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg)
             throws Exception {

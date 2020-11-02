@@ -30,7 +30,7 @@ public class NettyHttpClient {
             b.group(workerGroup);
             b.channel(NioSocketChannel.class);
             b.option(ChannelOption.SO_KEEPALIVE, true)
-            .option(ChannelOption.SO_RCVBUF, 32 * 1024);
+                    .option(ChannelOption.SO_RCVBUF, 32 * 1024);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
