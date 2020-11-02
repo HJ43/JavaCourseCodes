@@ -48,7 +48,8 @@ public class NettyHttpClient {
                     request.content().readableBytes());*/
             // Start the client.
             String host = backendUrl.replaceAll("/", "").split(":")[1];
-            int port = Integer.parseInt(backendUrl.replaceAll("/", "").split(":")[2]);
+            String[] split = backendUrl.replaceAll("/", "").split(":");
+            int port = split.length < 3 ? 80 : Integer.parseInt(split[2]);
             ChannelFuture f = b.connect(host, port).sync();
             /*f.channel().write(request);
             f.channel().flush();*/
