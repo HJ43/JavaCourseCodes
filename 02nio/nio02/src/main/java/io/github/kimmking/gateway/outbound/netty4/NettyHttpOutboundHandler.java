@@ -8,6 +8,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 
 import java.net.URI;
+import java.net.URL;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
@@ -35,7 +36,7 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
         ctx.writeAndFlush(request);*/
         String host = backendUrl.replaceAll("/", "").split(":")[1];
         DefaultFullHttpRequest request = new DefaultFullHttpRequest(
-                HttpVersion.HTTP_1_1, fullHttpRequest.method(), fullHttpRequest.uri());
+                HttpVersion.HTTP_1_1, fullHttpRequest.method(), new URI(backendUrl).toASCIIString());
        /*DefaultFullHttpRequest request = new DefaultFullHttpRequest(
                 HttpVersion.HTTP_1_1, HttpMethod.GET, new URI("/").toASCIIString());*/
 

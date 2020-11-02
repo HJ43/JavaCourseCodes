@@ -1,23 +1,28 @@
 package io.github.kimmking.gateway.outbound.netty4;
 
+import io.github.kimmking.gateway.router.MyFirstHttpEndpointRouter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpRequestEncoder;
-import io.netty.handler.codec.http.HttpResponseDecoder;
+import io.netty.handler.codec.http.*;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NettyHttpClient {
-    private String backendUrl;
+    private List<String> backendUrlList;
 
-    public NettyHttpClient(String backendUrl) {
-        this.backendUrl = backendUrl;
+    public NettyHttpClient(List<String> backendUrlList) {
+        this.backendUrlList = backendUrlList;
     }
 
     public void connect(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) throws Exception {
+        MyFirstHttpEndpointRouter myFirstHttpEndpointRouter = new MyFirstHttpEndpointRouter();
+        String backendUrl = myFirstHttpEndpointRouter.route(backendUrlList);
+        // System.out.println("Current backendUrl: " + backendUrl);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
@@ -47,9 +52,9 @@ public class NettyHttpClient {
             request.headers().set(HttpHeaderNames.CONTENT_LENGTH,
                     request.content().readableBytes());*/
             // Start the client.
-            String host = backendUrl.replaceAll("/", "").split(":")[1];
-            String[] split = backendUrl.replaceAll("/", "").split(":");
-            int port = split.length < 3 ? 80 : Integer.parseInt(split[2]);
+            URL url = new URL(backendUrl);
+            int port = url.getPort() > 0 ? url.getPort() : 80;
+            String host = url.getHost();
             ChannelFuture f = b.connect(host, port).sync();
             /*f.channel().write(request);
             f.channel().flush();*/
@@ -58,10 +63,5 @@ public class NettyHttpClient {
             workerGroup.shutdownGracefully();
         }
 
-    }
-
-    public static void main(String[] args) throws Exception {
-        // NettyHttpClient client = new NettyHttpClient();
-        //client.connect("127.0.0.1", 8088);
     }
 }
