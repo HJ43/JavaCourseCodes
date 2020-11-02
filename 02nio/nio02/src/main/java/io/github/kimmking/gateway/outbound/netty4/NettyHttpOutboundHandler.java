@@ -17,23 +17,25 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
     private ByteBufToBytes reader;
     private ChannelHandlerContext parentCtx;
     private int contentLength = 0;
-    private String proxyServer = null;
-    public NettyHttpOutboundHandler(ChannelHandlerContext ctx, String proxyServer) {
+    private FullHttpRequest fullHttpRequest = null;
+    private String backendUrl;
+    public NettyHttpOutboundHandler(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest, String backendUrl) {
         this.parentCtx = ctx;
-        this.proxyServer = proxyServer;
+        this.fullHttpRequest = fullHttpRequest;
+        this.backendUrl = backendUrl;
     }
     @Override
     public void channelActive(ChannelHandlerContext ctx)
             throws Exception {
-        System.out.println("channelActive");
+        //System.out.println("channelActive");
        /* URI uri = new URI("/api/hello");
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, uri.toASCIIString());
         request.headers().add(HttpHeaderNames.CONNECTION,HttpHeaderValues.KEEP_ALIVE);
         request.headers().add(HttpHeaderNames.CONTENT_LENGTH,request.content().readableBytes());
         ctx.writeAndFlush(request);*/
-       String host = proxyServer.replaceAll("/", "").split(":")[1];
-       DefaultFullHttpRequest request = new DefaultFullHttpRequest(
-                    HttpVersion.HTTP_1_1, HttpMethod.GET, new URI("/api/hello").toASCIIString());
+        String host = backendUrl.replaceAll("/", "").split(":")[1];
+        DefaultFullHttpRequest request = new DefaultFullHttpRequest(
+                HttpVersion.HTTP_1_1, fullHttpRequest.method(), fullHttpRequest.uri());
        /*DefaultFullHttpRequest request = new DefaultFullHttpRequest(
                 HttpVersion.HTTP_1_1, HttpMethod.GET, new URI("/").toASCIIString());*/
 
@@ -49,12 +51,12 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg)
             throws Exception {
-        System.out.println("channelRead");
+        //System.out.println("channelRead");
 
         if (msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
-            System.out.println("CONTENT_TYPE:"
-                    + response.headers().get(HttpHeaderNames.CONTENT_TYPE));
+            /*System.out.println("CONTENT_TYPE:"
+                    + response.headers().get(HttpHeaderNames.CONTENT_TYPE));*/
             if (HttpUtil.isContentLengthSet(response)) {
                 contentLength = (int) HttpUtil.getContentLength(response);
                 reader = new ByteBufToBytes(contentLength);
@@ -66,7 +68,7 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
             reader.reading(content);
             content.release();
             byte[] bytes = reader.readFull();
-            System.out.println(new String(bytes));
+            //System.out.println(new String(bytes));
             if (reader.isEnd()) {
                 FullHttpResponse response = null;
                 try {

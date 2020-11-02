@@ -1,11 +1,13 @@
 package io.github.kimmking.gateway.inbound;
 
+import io.github.kimmking.gateway.filter.HttpMethodRequestFilter;
 import io.github.kimmking.gateway.outbound.httpclient4.HttpOutboundHandler;
 import io.github.kimmking.gateway.outbound.netty4.NettyHttpClient;
 import io.github.kimmking.gateway.outbound.netty4.NettyHttpOutboundHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
     public HttpInboundHandler(String proxyServer) {
         this.proxyServer = proxyServer;
-        handler = new NettyHttpClient();
+        handler = new NettyHttpClient(proxyServer);
     }
 
     @Override
@@ -32,14 +34,17 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
             //logger.info("channelRead流量接口请求开始，时间为{}", startTime);
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
-//            String uri = fullRequest.uri();
-//            //logger.info("接收到的请求url为{}", uri);
+            String uri = fullRequest.uri();
+            fullRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
+            //System.out.println("接收到的请求url为" + uri);
 //            if (uri.contains("/test")) {
 //                handlerTest(fullRequest, ctx);
 //            }
 
             //handler.handle(fullRequest, ctx);
-            handler.connect(proxyServer, ctx);
+            HttpMethodRequestFilter myFirstHttpRequestFilter = new HttpMethodRequestFilter();
+            myFirstHttpRequestFilter.filter(fullRequest, ctx);
+            handler.connect(fullRequest, ctx);
         } catch(Exception e) {
             e.printStackTrace();
         } finally {

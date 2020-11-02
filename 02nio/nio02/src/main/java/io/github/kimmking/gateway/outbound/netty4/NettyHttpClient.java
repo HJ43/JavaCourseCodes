@@ -5,11 +5,19 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpRequestEncoder;
 import io.netty.handler.codec.http.HttpResponseDecoder;
 
 public class NettyHttpClient {
-    public void connect(String proxyServer, ChannelHandlerContext ctx) throws Exception {
+    private String backendUrl;
+
+    public NettyHttpClient(String backendUrl) {
+        this.backendUrl = backendUrl;
+    }
+
+    public void connect(FullHttpRequest fullHttpRequest, ChannelHandlerContext ctx) throws Exception {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
@@ -25,7 +33,7 @@ public class NettyHttpClient {
                     ch.pipeline().addLast(new HttpResponseDecoder());
                     // 客户端发送的是httprequest，所以要使用HttpRequestEncoder进行编码
                     ch.pipeline().addLast(new HttpRequestEncoder());
-                    ch.pipeline().addLast(new NettyHttpOutboundHandler(ctx, proxyServer));
+                    ch.pipeline().addLast(new NettyHttpOutboundHandler(ctx, fullHttpRequest, backendUrl));
                 }
             });
 
@@ -39,8 +47,8 @@ public class NettyHttpClient {
             request.headers().set(HttpHeaderNames.CONTENT_LENGTH,
                     request.content().readableBytes());*/
             // Start the client.
-            String host = proxyServer.replaceAll("/", "").split(":")[1];
-            int port = Integer.parseInt(proxyServer.replaceAll("/", "").split(":")[2]);
+            String host = backendUrl.replaceAll("/", "").split(":")[1];
+            int port = Integer.parseInt(backendUrl.replaceAll("/", "").split(":")[2]);
             ChannelFuture f = b.connect(host, port).sync();
             /*f.channel().write(request);
             f.channel().flush();*/
@@ -52,7 +60,7 @@ public class NettyHttpClient {
     }
 
     public static void main(String[] args) throws Exception {
-        NettyHttpClient client = new NettyHttpClient();
+        // NettyHttpClient client = new NettyHttpClient();
         //client.connect("127.0.0.1", 8088);
     }
 }
