@@ -44,6 +44,7 @@ public class NettyHttpOutboundHandler extends ChannelInboundHandlerAdapter {
 
         // 构建http请求
         request.headers().set(HttpHeaderNames.HOST, host);
+        request.headers().set("nio", fullHttpRequest.headers().get("nio"));
         request.headers().set(HttpHeaderNames.CONNECTION,
                 HttpHeaderNames.CONNECTION);
         request.headers().set(HttpHeaderNames.CONTENT_LENGTH,

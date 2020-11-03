@@ -1,11 +1,7 @@
 package io.github.kimmking.gateway.inbound;
 
-import io.github.kimmking.gateway.filter.HttpMethodRequestFilter;
-import io.github.kimmking.gateway.filter.UriHttpRequestFilter;
-import io.github.kimmking.gateway.outbound.httpclient4.HttpOutboundHandler;
+import io.github.kimmking.gateway.filter.HttpHeaderRequestFilter;
 import io.github.kimmking.gateway.outbound.netty4.NettyHttpClient;
-import io.github.kimmking.gateway.outbound.netty4.NettyHttpOutboundHandler;
-import io.github.kimmking.gateway.util.ByteBufToBytes;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
@@ -44,7 +40,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 //            }
 
             //handler.handle(fullRequest, ctx);
-            HttpMethodRequestFilter methodHttpRequestFilter = new HttpMethodRequestFilter();
+            HttpHeaderRequestFilter methodHttpRequestFilter = new HttpHeaderRequestFilter();
             methodHttpRequestFilter.filter(fullRequest, ctx);
             // UriHttpRequestFilter uriHttpRequestFilter = new UriHttpRequestFilter();
             // uriHttpRequestFilter.filter(fullRequest, ctx);
